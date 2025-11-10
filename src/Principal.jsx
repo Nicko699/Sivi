@@ -1,3 +1,5 @@
+import { Footer } from "./Footer";
+
 //creamos la funcion de inicio
 export function Home() {
   return (
@@ -39,6 +41,7 @@ export function Home() {
         {/* Línea decorativa  */}
         <div className="mt-10 h-1.5 w-40 bg-gradient-to-r from-blue-600 to-green-500 dark:from-blue-400 dark:to-green-300 rounded-full shadow-md animate-[pulse_2s_ease-in-out_infinite]"></div>
       </div>
+       <Footer />
     </main>
   );
 }

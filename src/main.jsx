@@ -7,6 +7,9 @@ import { createRoot } from 'react-dom/client';
 import './index.css'; 
 // importamos los estilos de tailwind desde la carpeta index.css
 
+import { ToastContainer } from "react-toastify"; // <-- esto faltaba
+import "react-toastify/dist/ReactToastify.css";
+
 import { Ruta } from "./rutas/ruta.jsx"; 
 // Importamos la carpeta que maneja las rutas
 
@@ -17,5 +20,6 @@ const root = createRoot(document.getElementById('root'));
 root.render(
   <StrictMode>
     <Ruta /> 
+    <ToastContainer position="top-right" autoClose={4000}/>
   </StrictMode>
 );
