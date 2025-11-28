@@ -25,7 +25,7 @@ export function Login() {
 
       alert(data.mensaje || "Inicio de sesión exitoso ✅");
     } catch (err) {
-      // ⚠️ Mostrar el error sin recargar la página
+      //  Mostrar el error sin recargar la página
       setError(err.message || "Credenciales incorrectas ❌");
     } finally {
       setLoading(false);
@@ -33,99 +33,111 @@ export function Login() {
   };
 
   return (
-    <main
-      className="min-h-screen flex items-start justify-center pt-60 sm:pt-23
-        bg-blue-100 dark:bg-blue-950 transition-colors duration-700 relative overflow-hidden px-4 sm:px-6 lg:px-0"
-    >
-      {/* Fondos del login */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-56 h-56 sm:w-72 sm:h-72 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-72 h-72 sm:w-[30rem] sm:h-[30rem] bg-green-400/20 dark:bg-green-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+  <main className="min-h-screen flex items-center justify-center
+    bg-gray-100 dark:bg-gradient-to-b dark:from-blue-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 relative overflow-hidden px-4">
+    
+    {/* Fondos animados suaves */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="absolute top-1/3 left-1/4 w-[400px] h-[400px]
+          dark:bg-blue-600/20 bg-blue-300/10 rounded-full blur-3xl "
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px]
+          dark:bg-blue-900/20 bg-blue-200/10 rounded-full blur-3xl "
+        />
       </div>
 
-      {/* Card login */}
-      <div
-        className="relative z-10 w-full max-w-xs sm:max-w-md bg-gray-100 dark:bg-gray-900/80
-        backdrop-blur-lg border border-blue-200 dark:border-blue-700/40
-        rounded-2xl shadow-[0_0_25px_rgba(16,185,129,0.15)] p-6 sm:p-10"
-      >
-        <div className="flex justify-center mb-4 sm:mb-6">
-          <div className="dark:bg-gray-100 rounded-lg p-2 flex items-center justify-center">
-            <img
-              src="/src/assets/Sivi.png"
-              alt="Logo SIVI"
-              className="h-16 w-16 sm:h-20 sm:w-20 object-contain
-                dark:brightness-125 dark:drop-shadow-[0_0_20px_rgba(16,185,129,0.7)]"
-            />
-          </div>
+
+    {/* Card login */}
+    <div className="relative z-10 w-full max-w-md bg-white/95 dark:bg-gray-900/90
+      backdrop-blur-xl  dark:border-blue-700/30
+      rounded-2xl shadow-2xl p-8">
+      
+      {/* Logo con fondo blanco fijo */}
+      <div className="flex justify-center mb-6">
+        <div className="bg-white rounded-xl p-3 shadow-md">
+          <img
+            src="/src/assets/Sivi.png"
+            alt="Logo SIVI"
+            className="h-16 w-16 object-contain"
+          />
+        </div>
+      </div>
+
+      {/* Título */}
+      <h2 className="text-2xl font-bold text-center text-blue-900 dark:text-white mb-6">
+        Iniciar Sesión
+      </h2>
+
+      {/* Formulario */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="email"
+            required
+            placeholder="Correo electrónico"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
+              border-2 border-gray-200 dark:border-gray-700 
+              focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
+              text-gray-800 dark:text-gray-100 placeholder-gray-400
+              transition-colors"
+          />
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-blue-900 dark:text-white mb-6 sm:mb-8 tracking-tight">
-          Bienvenido a SIVI
-        </h2>
+        <div className="relative">
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="password"
+            required
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
+              border-2 border-gray-200 dark:border-gray-700 
+              focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
+              text-gray-800 dark:text-gray-100 placeholder-gray-400
+              transition-colors"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 sm:mt-6">
-          <div className="relative">
-            <Mail className="absolute left-3 sm:left-4 top-3 sm:top-3.5 text-blue-500 dark:text-blue-400" />
-            <input
-              type="email"
-              required
-              placeholder="Correo electrónico"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-white/90 dark:bg-gray-800/80 
-                border border-gray-300 dark:border-gray-700 
-                focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 
-                text-gray-800 dark:text-gray-100 placeholder-gray-500 text-sm sm:text-base"
-            />
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
+            rounded-lg p-3 text-red-600 dark:text-red-400 text-sm animate-fade-in">
+            {error}
           </div>
+        )}
 
-          <div className="relative">
-            <Lock className="absolute left-3 sm:left-4 top-3 sm:top-3.5 text-blue-500 dark:text-blue-400" />
-            <input
-              type="password"
-              required
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 rounded-xl bg-white/90 dark:bg-gray-800/80 
-                border border-gray-300 dark:border-gray-700 
-                focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-500 
-                text-gray-800 dark:text-gray-100 placeholder-gray-500 text-sm sm:text-base"
-            />
-          </div>
-
-          {error && (
-            <p className="text-red-500 text-sm text-left font-semibold animate-fade-in">
-              {error}
-            </p>
-          )}
-
-          <div className="mt-1 sm:mt-2 text-sm text-left">
-            <Link
-              to={"/RecuperarContraseña"}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium underline-offset-4 hover:underline"
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 sm:py-3.5 rounded-xl font-bold text-white bg-gradient-to-r 
-              from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 
-              dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 
-              dark:hover:to-blue-600 shadow-lg hover:shadow-blue-400/30 
-              transition-all duration-300 text-sm sm:text-base cursor-pointer
-              ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+        <div className="text-left">
+          <Link
+            to="/RecuperarContraseña"
+            className="text-sm text-blue-600 dark:text-blue-500 hover:text-blue-700 
+              dark:hover:text-blue-400 font-medium transition-colors underline-offset-4 hover:underline"
           >
-            {loading ? "Verificando..." : "Ingresar"}
-          </button>
-        </form>
-      </div>
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
 
-      <Footer />
-    </main>
-  );
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 rounded-xl font-semibold text-white 
+            bg-gradient-to-r from-blue-500 to-blue-600 
+            hover:from-blue-600 hover:to-blue-700 
+            dark:from-blue-400 dark:to-blue-500 
+            dark:hover:from-blue-500 dark:hover:to-blue-600 
+            shadow-lg hover:shadow-xl transition-all
+            disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {loading ? "Verificando..." : "Ingresar"}
+        </button>
+      </form>
+    </div>
+
+    <Footer />
+  </main>
+);
 }

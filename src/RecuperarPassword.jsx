@@ -44,18 +44,25 @@ export function ForgotPassword() {
  return (
   <main
     className="min-h-screen flex items-center justify-center
-    bg-blue-100 dark:bg-blue-950 transition-colors duration-700 relative overflow-hidden px-4"
+    bg-gray-100 dark:bg-gradient-to-b dark:from-blue-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-700 relative overflow-hidden px-4"
   >
-    {/* Fondos decorativos */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-green-400/20 dark:bg-green-400/10 rounded-full blur-3xl animate-pulse"></div>
-    </div>
+    {/* Fondos animados suaves */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="absolute top-1/3 left-1/4 w-[400px] h-[400px]
+          dark:bg-blue-600/20 bg-blue-300/10 rounded-full blur-3xl "
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px]
+          dark:bg-blue-900/20 bg-blue-200/10 rounded-full blur-3xl "
+        />
+      </div>
+
 
     {/* Card principal */}
     <div
       className="relative z-10 w-full max-w-md bg-white/95 dark:bg-gray-900/90
-      backdrop-blur-xl border border-blue-200/50 dark:border-blue-700/30
+      backdrop-blur-xl 
       rounded-2xl shadow-2xl p-8"
     >
       {/* Logo con fondo blanco siempre */}
