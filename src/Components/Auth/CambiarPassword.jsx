@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
-import { Footer } from "./Footer";
-import api from "./Configuracion/AxiosConfigPublic";
+import { Footer } from "../Navigation/Footer";
 import { Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { cambiarContrasena } from "../../Services/AuthService/CambiarPasswordService";
 
 export function ResetPassword() {
   const location = useLocation();
-  
 
-  // Captura automáticamente los tokens de la URL
+  // Tokens desde la URL
   const [resetTokenId, setResetTokenId] = useState("");
   const [resetToken, setResetToken] = useState("");
 
@@ -22,83 +21,59 @@ export function ResetPassword() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   useEffect(() => {
-     const queryParams = new URLSearchParams(location.search);
+    const queryParams = new URLSearchParams(location.search);
     setResetTokenId(queryParams.get("resetTokenId") || "");
     setResetToken(queryParams.get("resetToken") || "");
   }, [location.search]);
 
   useEffect(() => {
-    // Valida que la contraseña tenga entre 10 y 64 caracteres
     setIsPasswordValid(password.length >= 10 && password.length <= 64);
   }, [password]);
 
   useEffect(() => {
-    // Comprueba si ambas contraseñas coinciden
     setPasswordsMatch(confirmPassword === "" || password === confirmPassword);
   }, [password, confirmPassword]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (cooldown) {
-    toast.info("Por favor, espera unos segundos antes de intentarlo nuevamente.");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    toast.error("Las contraseñas no coinciden.");
-    return;
-  }
-
-  if (!isPasswordValid) {
-    toast.error("La contraseña debe tener entre 10 y 64 caracteres.");
-    return;
-  }
-
-  setCooldown(true);
-
-  try {
-    const res = await api.post("/resetToken/cambiarContraseña", {
-      resetTokenId,
-      resetToken,
-      password,
-    });
-
-    // Si todo salió bien
-    const mensaje = res.data.mensaje || "¡Contraseña cambiada exitosamente!";
-    toast.success(mensaje);
-
-    setPassword("");
-    setConfirmPassword("");
-  } catch (err) {
-    // Aquí interceptamos los distintos errores y personalizamos los mensajes
-    let errorMsg = "No se pudo cambiar la contraseña. Intenta nuevamente.";
-
-    if (err.response?.status === 400) {
-      // BadRequestException
-      switch (err.response.data.mensaje) {
-        case "El token ya se ha usado":
-          errorMsg = "Este enlace ya fue utilizado para cambiar la contraseña.";
-          break;
-        case "Token caducado":
-          errorMsg = "El enlace ha expirado. Solicita uno nuevo.";
-          break;
-        case "El token de restablecimiento no coincide o es inválido.":
-          errorMsg = "El enlace es inválido o está dañado. Verifica el enlace enviado a tu correo.";
-          break;
-        default:
-          errorMsg = err.response.data.mensaje;
-      }
-    } else if (err.response?.status === 404) {
-      // NotFoundException
-      errorMsg = "No se encontró el enlace de restablecimiento. Solicita uno nuevo.";
+    if (cooldown) {
+      toast.info("Por favor, espera unos segundos.");
+      return;
     }
 
-    toast.error(errorMsg);
-  } finally {
-    setTimeout(() => setCooldown(false), 4000);
-  }
-};
+    if (!passwordsMatch) {
+      toast.error("Las contraseñas no coinciden.");
+      return;
+    }
+
+    if (!isPasswordValid) {
+      toast.error("La contraseña debe tener entre 10 y 64 caracteres.");
+      return;
+    }
+
+    setCooldown(true);
+
+    try {
+      const data = await cambiarContrasena({
+        resetTokenId,
+        resetToken,
+        password,
+      });
+
+      toast.success(
+        data.mensaje || "¡Contraseña cambiada exitosamente!"
+      );
+
+      setPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setTimeout(() => setCooldown(false), 4000);
+    }
+  };
+
 
 return (
   <main className="min-h-screen flex items-center justify-center
@@ -134,7 +109,7 @@ return (
 
       {/* Título */}
       <h2 className="text-2xl font-bold text-center text-blue-900 dark:text-white mb-6">
-        Cambiar Contraseña
+        Restablecer Contraseña
       </h2>
 
       {/* Formulario */}

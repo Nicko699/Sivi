@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Mail } from "lucide-react";
-import { Footer } from "./Footer";
-import api from "./Configuracion/AxiosConfigPublic";
+import { Footer } from "../Navigation/Footer";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { enviarCorreoRecuperacion } from "../../Services/AuthService/RecuperarPasswordService";
 
 export function ForgotPassword() {
   const [correo, setCorreo] = useState("");
@@ -13,30 +13,21 @@ export function ForgotPassword() {
     e.preventDefault();
 
     if (cooldown) {
-      toast.info("Por favor, espera unos segundos antes de intentarlo nuevamente.");
+      toast.info("Por favor, espera unos segundos.");
       return;
     }
 
     setCooldown(true);
 
     try {
-      const res = await api.post("/resetToken/recuperarContraseña", { correo });
-
-      // ✅ Mensaje claro y profesional sin revelar correos
-      const mensaje =
-        res.data.message ||
-        "Se ha enviado un enlace para restablecer tu contraseña. Por favor revisa tu bandeja de entrada o spam";
-
-      toast.success(mensaje);
+      const data = await enviarCorreoRecuperacion(correo);
+      toast.success(
+        data.message || "Si el correo existe, se envió el enlace"
+      );
       setCorreo("");
     } catch (err) {
-      const errorMsg =
-        err.response?.data?.mensaje ||
-        "No se pudo procesar la solicitud. Intenta nuevamente más tarde.";
-
-      toast.error(errorMsg);
+      toast.error(err.message);
     } finally {
-      // ⏳ Espera 5 segundos antes de permitir otro envío
       setTimeout(() => setCooldown(false), 4000);
     }
   };

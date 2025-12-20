@@ -1,66 +1,128 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080";
+let accessToken = null;
 
-// 🔹 Crear instancia de Axios
-const api = axios.create({
+// Getters / setters
+export const setAxiosAccessToken = (token) => {
+  accessToken = token;
+};
+
+export const getAxiosAccessToken = () => accessToken;
+
+const BASE_URL = "/api";
+
+// ================================
+// 🔹 Instancia solo para refresh
+// ================================
+const refreshApi = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true,
 });
 
-//  Interceptor para añadir el accessToken automáticamente
+// ================================
+// 🔹 Instancia principal
+// ================================
+const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+});
+
+// ================================
+// 🔹 Interceptor REQUEST
+// ================================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-//Refrescar token si el accessToken ha expirado
+// ================================
+// 🔹 Interceptor RESPONSE (refresh)
+// ================================
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    
-    if (error.response && error.response.status === 401) {
-      // Intentamos refrescar token
+    const originalRequest = error.config;
+
+    // Si el token expiró y no es un reintento
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      window.dispatchEvent(new Event("refreshStart"));
+
       try {
+        console.log("🔄 Renovando token...");
+        const res = await refreshApi.post("/refreshToken/renovarToken");
 
-        const refreshToken = localStorage.getItem("refreshToken");
-        const refreshTokenId = localStorage.getItem("refreshTokenId");
+        const newToken = res.data.accessToken;
 
-        if (!refreshToken || !refreshTokenId) {
-    throw new Error("No hay refresh token disponible");
-}
+        if (!newToken) {
+          throw new Error("El backend no envió accessToken en el body");
+        }
 
+        setAxiosAccessToken(newToken);
 
-        // 1️ Pedir nuevo accessToken
-        const res = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshTokenId,refreshToken });
+        window.dispatchEvent(
+          new CustomEvent("tokenRefreshed", { detail: { token: newToken } })
+        );
 
-        const newAccessToken = res.data.accessToken;
+        processQueue(null, newToken);
 
-        //Actualizar tokens en localStorage
-      localStorage.setItem("accessToken", res.data.accessToken);
-      localStorage.setItem("refreshTokenId", res.data.refreshTokenId);
-      localStorage.setItem("refreshToken", res.data.refreshToken);
+        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
 
-        // 2️ Reintentar la petición original
-        error.config.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axios(error.config);
+        console.log("✅ Token renovado correctamente");
 
-      } catch (refreshError) {
-        //  Aquí es donde sabemos que el refresh token expiró o es inválido
-        console.warn("Refresh token expirado o inválido, cerrar sesión");
-        localStorage.clear();
-        window.location.href = "/login"; // Redirigir al login
-        return Promise.reject(refreshError);
+        return api(originalRequest);
+      } catch (err) {
+        console.error("❌ Error en refresh token:", err);
+        processQueue(err, null);
+        window.dispatchEvent(new Event("tokenRefreshed"));
+        cerrarSesion("Error en refresh");
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
+
     return Promise.reject(error);
   }
 );
 
+// ================================
+// 🔹 Cerrar sesión
+// ================================
+const cerrarSesion = (razon = "desconocida") => {
+  console.log("🔒 Cerrando sesión por:", razon);
+  setAxiosAccessToken(null);
+  window.dispatchEvent(new CustomEvent("logout"));
+};
 
 export default api;

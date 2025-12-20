@@ -5,4 +5,24 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(),tailwindcss()],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+         // 🔥 Permite que las cookies del backend funcionen EN localhost
+        cookieDomainRewrite: "",
+
+        // (opcional pero recomendado)
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Origin', 'http://localhost:5173');
+          });
+        },
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 })

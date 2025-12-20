@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaSun, FaMoon, FaBars, FaTimes } from "react-icons/fa"; 
-import useDarkMode from "./DarkMode.jsx";
+import useDarkMode from "../../Context/Theme/DarkMode";
 import { Link, useLocation } from "react-router-dom";
 
 export function Navbar() {

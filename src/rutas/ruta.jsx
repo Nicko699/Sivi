@@ -1,22 +1,36 @@
-import { BrowserRouter as Router, Routes, Route,Navigate } from "react-router-dom";
-import { Home } from "../Principal";
-import { Login } from "../Login";   
-import { ForgotPassword } from "../RecuperarPassword";    
-import { Navbar } from "../Navbar"; 
-import { ResetPassword } from "../CambiarPassword";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Home } from "../Components/Auth/Principal";
+import { Login } from "../Components/Auth/Login";
+import { ForgotPassword } from "../Components/Auth/RecuperarPassword";
+import { Navbar } from "../Components/Navigation/Navbar";
+import { ResetPassword } from "../Components/Auth/CambiarPassword";
+import { Dashboard } from "../Components/Dashboard/Dashboard";
+import { AccessTokenProvider } from "../Context/Auht/AccessTokenProvider";
+import { ProtectedRoute } from "../Context/Auht/protectedRoute"; // ✅ Importa esto
 
 // Componente que define las rutas de la aplicación
 export function Ruta() {
   return (
-    <Router>
-      <Navbar />  {/*Visible en las 2 rutas que hay*/}
-      <Routes>
-        
-        <Route path="/" element={<Home/>}/>      {/* Ruta principal */}
-        <Route path="/login" element={<Login />} /> {/* Ruta de login */}
-        <Route path="/RecuperarContraseña" element={<ForgotPassword />} /> {/* Ruta de recuperar contraseña */}
-        <Route path="/CambiarPassword" element={<ResetPassword />} /> {/* Ruta de cambiar contraseña */}
-      </Routes>
-    </Router>
+    <AccessTokenProvider>
+      <Router>
+        <Routes>
+          {/* 🌐 Rutas públicas */}
+          <Route path="/" element={<><Navbar /><Home /></>} />
+          <Route path="/login" element={<><Navbar /><Login /></>} />
+          <Route path="/RecuperarContraseña" element={<><Navbar /><ForgotPassword /></>} />
+          <Route path="/CambiarPassword" element={<><Navbar /><ResetPassword /></>} />
+
+          {/* 🔒 Dashboard protegido */}
+          <Route
+            path="/dashboard/*"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AccessTokenProvider>
   );
 }

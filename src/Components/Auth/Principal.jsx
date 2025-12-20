@@ -1,4 +1,4 @@
-import { Footer } from "./Footer";
+import { Footer } from "../Navigation/Footer";
 
 export function Home() {
   return (
