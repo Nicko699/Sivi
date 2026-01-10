@@ -6,7 +6,9 @@ import { Inicio } from "../Dashboard/Inicio";
 import { Ventas } from "../Dashboard/Ventas";
 import { Usuarios } from "./ModuloUsuario/Usuarios";
 import { CrearUsuario } from "./ModuloUsuario/CrearUsuario";
-import { ProtectedRoute } from "../../Context/Auht/protectedRoute"; // ✅ Importación agregada
+import { Marcas } from "./ModuloMarca/Marcas" 
+import { ProtectedRoute } from "../../Context/Auht/protectedRoute";
+
 
 export function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,6 +62,16 @@ export function Dashboard() {
               element={
                 <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
                   <CrearUsuario />
+                </ProtectedRoute>
+              }
+            />
+
+              {/* Ruta solo para ADMIN */}
+            <Route
+              path="marcas"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
+                  <Marcas />
                 </ProtectedRoute>
               }
             />

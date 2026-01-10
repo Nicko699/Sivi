@@ -82,7 +82,7 @@ export function Login() {
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
-                border-2 border-gray-200 dark:border-gray-700 
+                border-2 border-gray-300 dark:border-gray-700 
                 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
                 text-gray-800 dark:text-gray-100 placeholder-gray-400
                 transition-colors"
@@ -98,19 +98,18 @@ export function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
-                border-2 border-gray-200 dark:border-gray-700 
+                border-2 border-gray-300 dark:border-gray-700 
                 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
                 text-gray-800 dark:text-gray-100 placeholder-gray-400
                 transition-colors"
             />
           </div>
 
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
-              rounded-lg p-3 text-red-600 dark:text-red-400 text-sm animate-fade-in">
-              {error}
-            </div>
-          )}
+{error && (
+  <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
+    {error}
+  </div>
+)}
 
           <div className="text-left">
             <Link

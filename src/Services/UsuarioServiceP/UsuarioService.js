@@ -97,3 +97,51 @@ export const eliminarUsuario = async (id) => {
   }
 };
 
+export const editarUsuario = async (id, usuarioData) => {
+  try {
+    const response = await api.put(`/usuario/editarUsuario/${id}`, usuarioData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al editar usuario:", error);
+
+    const status = error.response?.status;
+    const backendMessage = error.response?.data?.message;
+
+    switch (status) {
+      case 400:
+        // Caso: validación fallida o datos inválidos
+        throw new Error(
+          backendMessage ||
+            "Los datos proporcionados no son válidos. Verifica que todos los campos estén correctos."
+        );
+
+      case 403:
+        // Caso: sin permisos de administrador
+        throw new Error(
+          backendMessage || 
+            "No tienes permisos suficientes para editar usuarios."
+        );
+
+      case 404:
+        // Caso: usuario no encontrado
+        throw new Error(
+          backendMessage || 
+            "El usuario no existe o ya fue eliminado."
+        );
+
+      case 409:
+        // Caso: conflicto (ej: intentar desactivar el único admin)
+        throw new Error(
+          backendMessage ||
+            "No se puede realizar esta operación. Verifica que no sea el único administrador activo."
+        );
+
+      default:
+        // Cualquier otro error (500, red, etc.)
+        throw new Error(
+          backendMessage || 
+            "Ocurrió un error inesperado al editar el usuario."
+        );
+    }
+  }
+};

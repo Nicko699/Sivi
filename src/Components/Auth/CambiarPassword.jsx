@@ -48,7 +48,7 @@ export function ResetPassword() {
     }
 
     if (!isPasswordValid) {
-      toast.error("La contraseña debe tener entre 10 y 64 caracteres.");
+      toast.error("La contraseña debe tener minimo 10 digitos");
       return;
     }
 
@@ -121,12 +121,12 @@ return (
             <input
               type="password"
               required
-              placeholder=" Ingresa tu nueva contraseña"
+              placeholder="Nueva contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={cooldown}
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
-                border-2 border-gray-200 dark:border-gray-700 
+                border-2 border-gray-300 dark:border-gray-700 
                 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
                 text-gray-800 dark:text-gray-100 placeholder-gray-400
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -141,7 +141,7 @@ return (
             }`}>
               {isPasswordValid
                 ? "Contraseña válida"
-                : "La contraseña debe tener entre 10 y 64 caracteres"}
+                : "La contraseña debe tener minimo 10 digitos"}
             </p>
           )}
         </div>
@@ -153,12 +153,12 @@ return (
             <input
               type="password"
               required
-              placeholder="Confirma tu nueva contraseña"
+              placeholder="Confirmar contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={cooldown}
               className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50
-                border-2 border-gray-200 dark:border-gray-700 
+                border-2 border-gray-300 dark:border-gray-700 
                 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none
                 text-gray-800 dark:text-gray-100 placeholder-gray-400
                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

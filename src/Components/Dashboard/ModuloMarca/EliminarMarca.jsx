@@ -1,18 +1,19 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import { eliminarUsuario } from "../../../Services/UsuarioServiceP/UsuarioService";
+import { eliminarMarca } from "../../../Services/MarcaServiceP/MarcaService";
 
 const MySwal = withReactContent(Swal);
 
-export async function EliminarUsuario(usuario, onUsuarioEliminado) {
-  if (!usuario) return;
+export async function EliminarMarca(marca, onMarcaEliminada) {
+  if (!marca) return;
 
   const result = await MySwal.fire({
-    title: `<strong>¿Deseas eliminar a ${usuario.nombre}?</strong>`,
+    title: `<strong>¿Deseas eliminar la marca "${marca.nombre}"?</strong>`,
     html: `
-      <p style="margin: 3px 0 0; font-size: 20px; font-weight: 500; color: #4B5563;">
-        ${usuario.correo}
+      <p style="margin: 3px 0 0; font-size: 16px; font-weight: 400; color: #6B7280;">
+        ${marca.descripcion || 'Sin descripción'}
       </p>
+      
     `,
     icon: "warning",
     iconColor: "#F87171",
@@ -28,12 +29,14 @@ export async function EliminarUsuario(usuario, onUsuarioEliminado) {
 
     preConfirm: async () => {
       try {
-        await eliminarUsuario(usuario.id);
+        await eliminarMarca(marca.id);
         return true;
       } catch (error) {
-        // Si el backend devuelve mensaje JSON (Spring)
         const backendMessage =
-          error.response?.data?.message || error.message || "Error al eliminar el usuario.";
+          error.response?.data?.message || 
+          error.response?.data?.mensaje || 
+          error.message || 
+          "Error al eliminar la marca.";
         Swal.showValidationMessage(backendMessage);
         return false;
       }
@@ -42,11 +45,11 @@ export async function EliminarUsuario(usuario, onUsuarioEliminado) {
   });
 
   if (result.isConfirmed) {
-    if (onUsuarioEliminado) onUsuarioEliminado();
+    if (onMarcaEliminada) onMarcaEliminada();
 
     Swal.fire({
-      title: "¡Usuario eliminado!",
-      text: `${usuario.nombre} fue eliminado del sistema`,
+      title: "¡Marca eliminada!",
+      text: `La marca "${marca.nombre}" fue eliminada del sistema`,
       icon: "success",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#2563eb",

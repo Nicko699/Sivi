@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, ShoppingCart, Users, X } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, X, Tag, Package } from "lucide-react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useAccessToken } from "../../Context/Auht/UseAccessToken";
 import useDarkMode from "../../Context/Theme/DarkMode";
@@ -75,6 +75,12 @@ export function Sidebar({ isOpen, onClose }) {
           {isAdmin && (
             <NavLink to="/dashboard/usuarios" className={claseLink} onClick={onClose}>
               <Users size={20} /> Usuarios
+            </NavLink>
+          )}
+
+          {isAdmin && (
+            <NavLink to="/dashboard/marcas" className={claseLink} onClick={onClose}>
+              <Package size={20} /> Marcas {/* ✅ Cambié el ícono y verifiqué la ruta */}
             </NavLink>
           )}
         </nav>

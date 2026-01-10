@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Search, X, Trash2 } from "lucide-react";
+import { Search, X, Trash2, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
 import { obtenerUsuariosFiltrados, eliminarUsuario } from "../../../Services/UsuarioServiceP/UsuarioService";
-import {  EliminarUsuario} from "./EliminarUsuario";
-
+import { EliminarUsuario } from "./EliminarUsuario";
+import { EditarUsuarioModal } from "./EditarUsuario";
 
 // 🔹 Función para traducir roles
 const traducirRol = (rol) => {
@@ -96,6 +96,9 @@ export function Usuarios() {
   const [filtroRol, setFiltroRol] = useState("");
   const [filtroActivo, setFiltroActivo] = useState("");
 
+  // 🔹 Estados para edición
+  const [modalEditar, setModalEditar] = useState(false);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
   const LoaderOverlay = () => (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
@@ -146,6 +149,16 @@ export function Usuarios() {
 
   const irPagina = (pagina) => cargarUsuarios(pagina);
   const hayFiltrosActivos = filtroNombre || filtroRol || filtroActivo;
+
+  // 🔹 Funciones de edición
+  const handleEditar = (usuario) => {
+    setUsuarioSeleccionado(usuario);
+    setModalEditar(true);
+  };
+
+  const handleSuccess = () => {
+    cargarUsuarios(pageNumber);
+  };
 
  return (
   <div className="px-8 py-4 transition-all duration-300 max-sm:px-4 max-sm:py-6">
@@ -226,13 +239,13 @@ export function Usuarios() {
         <table className="w-full text-sm bg-white dark:bg-gray-800">
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300">
-              <th className="py-2 px-3 text-center max-sm:py-4">ID</th>
-              <th className="py-2 px-3 text-left max-sm:py-4">Nombre</th>
-              <th className="py-2 px-3 text-left max-sm:py-4">Correo</th>
-              <th className="py-2 px-3 text-center max-sm:py-4">Roles</th>
-              <th className="py-2 px-3 text-center max-sm:py-4">Estado</th>
-              <th className="py-2 px-3 text-center max-sm:py-4">Fecha creación</th>
-              <th className="py-2 px-3 text-center max-sm:py-4">Acciones</th>
+              <th className="py-2 px-3 text-center max-sm:py-4 w-[8%]">ID</th>
+              <th className="py-2 px-3 text-left max-sm:py-4 w-[12%]">Nombre</th>
+              <th className="py-2 px-3 text-left max-sm:py-4 w-[20%]" >Correo</th>
+              <th className="py-2 px-3 text-center max-sm:py-4 w-[18%]">Roles</th>
+              <th className="py-2 px-3 text-center max-sm:py-4 w-[12%]">Estado</th>
+              <th className="py-2 px-3 text-center max-sm:py-4 w-[15%]">Fecha creación</th>
+              <th className="py-2 px-3 text-center max-sm:py-4 w-[20%]">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -270,27 +283,44 @@ export function Usuarios() {
                 <td className="py-3 px-3 text-center text-gray-600 dark:text-gray-400 max-sm:py-4 max-sm:text-xs">
                   {new Date(u.fechaCreacion).toLocaleDateString()}
                 </td>
-                <td className="py-2px-3 text-center max-sm:py-4">
-                  <div className="flex justify-center">
-                    <div className="relative group inline-block">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          EliminarUsuario(u, cargarUsuarios);
-                        }}
-                        className="p-2 rounded-lg bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4 pointer-events-none" />
-                      </button>
+                <td className="px-3 text-center max-sm:py-4">
+  <div className="flex justify-center items-center gap-2">
+    
+    {/* Botón Editar */}
+    <div className="relative group inline-block">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleEditar(u);
+        }}
+        className="p-2 rounded-lg bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
+      >
+        <Edit className="w-4 h-4 pointer-events-none" />
+      </button>
+      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
+        Editar usuario
+      </span>
+    </div>
 
-                      {/* Tooltip */}
-                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-                        Eliminar usuario
-                      </span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+    {/* Botón Eliminar */}
+    <div className="relative group inline-block">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          EliminarUsuario(u, cargarUsuarios);
+        }}
+        className="p-2 rounded-lg bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
+      >
+        <Trash2 className="w-4 h-4 pointer-events-none" />
+      </button>
+      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
+        Eliminar usuario
+      </span>
+    </div>
+    
+  </div>
+</td>
+      </tr>
             ))}
           </tbody>
         </table>
@@ -329,5 +359,14 @@ export function Usuarios() {
         </button>
       </div>
     )}
+
+    
+      {/* Modal de editar */}
+      <EditarUsuarioModal
+        isOpen={modalEditar}
+        onClose={() => setModalEditar(false)}
+        usuario={usuarioSeleccionado}
+        onSuccess={handleSuccess}
+      />
   </div>
 );}

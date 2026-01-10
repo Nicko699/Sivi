@@ -59,6 +59,18 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // ✅ CRÍTICO: NO intentar refresh en endpoints de autenticación
+    const isAuthEndpoint = 
+      originalRequest.url?.includes("/iniciarSesion") ||
+      originalRequest.url?.includes("/registrar") ||
+      originalRequest.url?.includes("/login") ||
+      originalRequest.url?.includes("/registro");
+
+    // Si es endpoint de auth, devolver error directamente
+    if (isAuthEndpoint) {
+      return Promise.reject(error);
+    }
+
     // Si el token expiró y no es un reintento
     if (error.response?.status === 401 && !originalRequest._retry) {
       
@@ -104,7 +116,7 @@ api.interceptors.response.use(
       } catch (err) {
         console.error("❌ Error en refresh token:", err);
         processQueue(err, null);
-        window.dispatchEvent(new Event("tokenRefreshed"));
+        window.dispatchEvent(new Event("tokenRefreshFailed"));
         cerrarSesion("Error en refresh");
         return Promise.reject(err);
       } finally {

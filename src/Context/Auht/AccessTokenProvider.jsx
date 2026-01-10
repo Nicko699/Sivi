@@ -29,19 +29,28 @@ export function AccessTokenProvider({ children }) {
       setIsRefreshing(false);
     };
 
-    // ✅ Escuchar logout
+    // ✅ FIX: Resetear isRefreshing cuando falla el refresh
+    const handleTokenRefreshFailed = () => {
+      console.log("❌ TokenRefreshFailed - Reseteando estado");
+      setIsRefreshing(false);
+    };
+
+    // ✅ FIX: Resetear TODO en logout
     const handleLogout = () => {
       console.log("🔴 Evento LOGOUT detectado");
+      setIsRefreshing(false);  // ← CRÍTICO: Resetear isRefreshing
       setAccessToken(null);
     };
     
     window.addEventListener("refreshStart", handleRefreshStart);
     window.addEventListener("tokenRefreshed", handleTokenRefreshed);
+    window.addEventListener("tokenRefreshFailed", handleTokenRefreshFailed);
     window.addEventListener("logout", handleLogout);
     
     return () => {
       window.removeEventListener("refreshStart", handleRefreshStart);
       window.removeEventListener("tokenRefreshed", handleTokenRefreshed);
+      window.removeEventListener("tokenRefreshFailed", handleTokenRefreshFailed);
       window.removeEventListener("logout", handleLogout);
     };
   }, []);
@@ -55,7 +64,6 @@ export function AccessTokenProvider({ children }) {
     }
   };
 
-  // 🔥 CAMBIO CRÍTICO: Solo verificar si existe el token
   const isAuthenticated = () => {
     // ✅ Si está refrescando, considera que SÍ está autenticado
     if (isRefreshing) {
@@ -63,7 +71,7 @@ export function AccessTokenProvider({ children }) {
       return true;
     }
     
-    // ✅ Solo verifica si el token existe, NO si está expirado
+    // ✅ Solo verifica si el token existe
     const authenticated = !!accessToken;
     console.log("🛡️ isAuthenticated:", authenticated);
     return authenticated;
