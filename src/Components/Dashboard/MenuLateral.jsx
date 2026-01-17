@@ -83,6 +83,12 @@ export function Sidebar({ isOpen, onClose }) {
               <Package size={20} /> Marcas {/* ✅ Cambié el ícono y verifiqué la ruta */}
             </NavLink>
           )}
+
+          {isAdmin && (
+            <NavLink to="/dashboard/productos" className={claseLink} onClick={onClose}>
+              <Package size={20} /> Productos {/* ✅ Cambié el ícono y verifiqué la ruta */}
+            </NavLink>
+          )}
         </nav>
 
         {/* Footer */}
