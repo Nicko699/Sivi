@@ -7,6 +7,7 @@ import { Ventas } from "../Dashboard/Ventas";
 import { Usuarios } from "./ModuloUsuario/Usuarios";
 import { CrearUsuario } from "./ModuloUsuario/CrearUsuario";
 import { Marcas } from "./ModuloMarca/Marcas" 
+import { Productos } from "./ModuloProducto/ProductosPage" 
 import { ProtectedRoute } from "../../Context/Auht/protectedRoute";
 
 
@@ -75,6 +76,16 @@ export function Dashboard() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="productos"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
+                  <Productos />
+                </ProtectedRoute>
+              }
+            />
+            
 
             {/* Cualquier otra ruta redirige al inicio */}
             <Route path="*" element={<Navigate to="/" replace />} />
