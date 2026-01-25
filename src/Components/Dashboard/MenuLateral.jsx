@@ -1,12 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { LayoutDashboard, ShoppingCart, Users, X, Tag, Package } from "lucide-react";
+import { Home, ShoppingCart, Users, X, Tag, Package, Layers } from "lucide-react";
 import { FaSun, FaMoon } from "react-icons/fa";
 import { useAccessToken } from "../../Context/Auht/UseAccessToken";
 import useDarkMode from "../../Context/Theme/DarkMode";
 
 export function Sidebar({ isOpen, onClose }) {
-    
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const { setAccessToken } = useAccessToken();
 
   const { getNombreUsuario, getRolesUsuario } = useAccessToken();
@@ -63,12 +62,24 @@ export function Sidebar({ isOpen, onClose }) {
         {/* Navegación con scroll */}
         <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           <NavLink to="/dashboard" className={claseLink} onClick={onClose}>
-            <LayoutDashboard size={20} /> Inicio
+            <Home size={20} /> Inicio
           </NavLink>
 
           {(isAdmin || isVendedor) && (
             <NavLink to="/dashboard/ventas" className={claseLink} onClick={onClose}> 
               <ShoppingCart size={20} /> Ventas
+            </NavLink>
+          )}
+
+          {(isAdmin || isVendedor) && (
+            <NavLink to="/dashboard/productos" className={claseLink} onClick={onClose}>
+              <Package size={20} /> Productos 
+            </NavLink>
+          )}
+
+          {isAdmin && (
+            <NavLink to="/dashboard/lotes" className={claseLink} onClick={onClose}>
+              <Layers size={20} /> Lotes
             </NavLink>
           )}
 
@@ -80,7 +91,7 @@ export function Sidebar({ isOpen, onClose }) {
 
           {isAdmin && (
             <NavLink to="/dashboard/marcas" className={claseLink} onClick={onClose}>
-              <Package size={20} /> Marcas {/* ✅ Cambié el ícono y verifiqué la ruta */}
+              <Tag size={20} /> Marcas 
             </NavLink>
           )}
         </nav>
@@ -118,9 +129,9 @@ export function Sidebar({ isOpen, onClose }) {
             {/* Cerrar sesión */}
             <button
               onClick={() => {
-               setAccessToken(null); // 🔥 limpia el token del contexto y Axios
+                setAccessToken(null); //limpia el token del contexto y Axios
                 navigate("/login", { replace: true });
-               }}
+              }}
               className="mt-3 w-full bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
             >
               Cerrar sesión

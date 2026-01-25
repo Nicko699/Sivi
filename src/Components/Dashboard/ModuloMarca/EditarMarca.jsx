@@ -110,12 +110,12 @@ export function EditarMarca({ isOpen, onClose, marca, onSuccess }) {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"
+        className="fixed inset-0 bg-black/50 backdrop-blur-none z-40 transition-opacity"
         onClick={handleClose}
       />
 
-      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white dark:bg-slate-800 shadow-2xl z-50 overflow-y-auto transition-transform">
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-gray-50 dark:bg-slate-800 shadow-2xl z-50 overflow-y-auto transition-transform">
+        <div className="sticky top-0 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 dark:bg-blue-700 rounded-xl flex items-center justify-center">
               <Tag size={20} className="text-white" />
@@ -157,10 +157,10 @@ export function EditarMarca({ isOpen, onClose, marca, onSuccess }) {
                 value={formData.nombre}
                 onChange={handleChange}
                 placeholder="Ej: Samsung, Apple, LG..."
-                className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 rounded-xl border-2 bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 transition ${
                   errores.nombre
                     ? "border-red-400 focus:ring-red-400"
-                    : "border-gray-300 dark:border-slate-600 focus:ring-blue-400"
+                    : "border-gray-300 dark:border-slate-600"
                 } transition`}
               />
               {errores.nombre && (
@@ -181,13 +181,13 @@ export function EditarMarca({ isOpen, onClose, marca, onSuccess }) {
                 value={formData.descripcion}
                 onChange={handleChange}
                 placeholder="Descripción breve de la marca..."
-                maxLength={50}
-                rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 transition resize-none"
+                maxLength={250}
+                rows={5}
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 transition resize-none"
               />
               <div className="flex justify-end">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {formData.descripcion.length}/50 caracteres
+                  {formData.descripcion.length}/250 caracteres
                 </span>
               </div>
             </div>
@@ -256,7 +256,7 @@ export function EditarMarca({ isOpen, onClose, marca, onSuccess }) {
               <button
                 onClick={handleClose}
                 disabled={loading}
-                className="px-6 py-3 rounded-xl bg-gray-300 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-400/70 dark:hover:bg-slate-600 transition disabled:opacity-50 cursor-pointer"
+                className="px-6 py-3 rounded-xl bg-gray-300/90 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-400/70 dark:hover:bg-slate-600 transition disabled:opacity-50 cursor-pointer"
               >
                 Cancelar
               </button>

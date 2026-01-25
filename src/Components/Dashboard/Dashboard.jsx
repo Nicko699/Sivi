@@ -6,7 +6,9 @@ import { Inicio } from "../Dashboard/Inicio";
 import { Ventas } from "../Dashboard/Ventas";
 import { Usuarios } from "./ModuloUsuario/Usuarios";
 import { CrearUsuario } from "./ModuloUsuario/CrearUsuario";
-import { Marcas } from "./ModuloMarca/Marcas" 
+import { Marcas } from "./ModuloMarca/Marcas";
+import { Productos } from "./ModuloProducto/Productos";
+import { Lotes } from "./ModuloLote/Lotes";
 import { ProtectedRoute } from "../../Context/Auht/protectedRoute";
 
 
@@ -46,7 +48,27 @@ export function Dashboard() {
               }
             />
 
-            {/* Ruta solo para ADMIN */}
+            {/* Ruta para ADMIN y VENDEDOR - Productos */}
+            <Route
+              path="productos"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN", "ROLE_VEND"]}>
+                  <Productos />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Ruta solo para ADMIN - Lotes */}
+            <Route
+              path="lotes"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
+                  <Lotes />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Ruta solo para ADMIN - Usuarios */}
             <Route
               path="usuarios"
               element={
@@ -56,7 +78,7 @@ export function Dashboard() {
               }
             />
 
-            {/* Ruta solo para ADMIN */}
+            {/* Ruta solo para ADMIN - Crear usuario */}
             <Route
               path="usuarios/crear"
               element={
@@ -66,7 +88,7 @@ export function Dashboard() {
               }
             />
 
-              {/* Ruta solo para ADMIN */}
+            {/* Ruta solo para ADMIN - Marcas */}
             <Route
               path="marcas"
               element={

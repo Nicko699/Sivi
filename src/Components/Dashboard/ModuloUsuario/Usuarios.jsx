@@ -172,7 +172,7 @@ export function Usuarios() {
       <div className="flex justify-center sm:justify-end">
         <Link
           to="/dashboard/usuarios/crear"
-          className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5"
+          className="bg-green-600/90 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5"
         >
           Crear Usuario
         </Link>

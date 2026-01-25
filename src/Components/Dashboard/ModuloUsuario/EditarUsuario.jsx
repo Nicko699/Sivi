@@ -140,12 +140,12 @@ export function EditarUsuarioModal({ isOpen, onClose, usuario, onSuccess }) {
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity"
+        className="fixed inset-0 bg-black/50 backdrop-blur-none z-40 transition-opacity"
         onClick={onClose}
       />
 
-      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white dark:bg-slate-800 shadow-2xl z-50 overflow-y-auto transition-transform">
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+      <div className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-gray-50 dark:bg-slate-800 shadow-2xl z-50 overflow-y-auto transition-transform">
+        <div className="sticky top-0 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 dark:bg-blue-700 rounded-xl flex items-center justify-center">
               <User size={20} className="text-white" />
@@ -187,10 +187,10 @@ export function EditarUsuarioModal({ isOpen, onClose, usuario, onSuccess }) {
                 value={formData.nombre}
                 onChange={handleChange}
                 placeholder="Nombre del usuario"
-                className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-3 rounded-xl border-2 bg-white dark:bg-slate-700/30 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-blue-500 transition ${
                   errores.nombre
                     ? "border-red-400 focus:ring-red-400"
-                    : "border-gray-300 dark:border-slate-600 focus:ring-blue-400"
+                    : "border-gray-300 dark:border-slate-600"
                 } transition`}
               />
               {errores.nombre && (

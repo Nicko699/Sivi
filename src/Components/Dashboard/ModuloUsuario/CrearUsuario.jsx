@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Save, Eye, EyeOff, User, Mail, Lock, Shield, CheckCircle, AlertCircle } from "lucide-react";
-import { crearUsuario } from "../../../Services/UsuarioServiceP/UsuarioService"; // ✅ import del service
+import { crearUsuario } from "../../../Services/UsuarioServiceP/UsuarioService"; //import del service
 
 export function CrearUsuario() {
   const navigate = useNavigate();
