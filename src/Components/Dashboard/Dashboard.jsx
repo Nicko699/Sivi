@@ -7,6 +7,7 @@ import { Ventas } from "../Dashboard/Ventas";
 import { Usuarios } from "./ModuloUsuario/Usuarios";
 import { CrearUsuario } from "./ModuloUsuario/CrearUsuario";
 import { Marcas } from "./ModuloMarca/Marcas";
+import { Categorias } from "./ModuloCategoria/Categorias";
 import { Productos } from "./ModuloProducto/Productos";
 import { Lotes } from "./ModuloLote/Lotes";
 import { ProtectedRoute } from "../../Context/Auht/protectedRoute";
@@ -94,6 +95,16 @@ export function Dashboard() {
               element={
                 <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
                   <Marcas />
+                </ProtectedRoute>
+              }
+            />
+
+             {/* Ruta para ADMIN y VENDEDOR - Categorías */}
+            <Route
+              path="categorias"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN", "ROLE_VEND"]}>
+                  <Categorias />
                 </ProtectedRoute>
               }
             />
