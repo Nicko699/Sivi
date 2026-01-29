@@ -89,11 +89,19 @@ export function Sidebar({ isOpen, onClose }) {
             </NavLink>
           )}
 
-          {isAdmin && (
-            <NavLink to="/dashboard/marcas" className={claseLink} onClick={onClose}>
-              <Tag size={20} /> Marcas 
-            </NavLink>
-          )}
+         {/* Bloque de Marcas  */}
+            {isAdmin && (
+              <NavLink to="/dashboard/marcas" className={claseLink} onClick={onClose}>
+                <Tag size={20} /> Marcas 
+              </NavLink>
+            )}
+
+            {/* Bloque de Categorías */}
+            {isAdmin && (
+              <NavLink to="/dashboard/categorias" className={claseLink} onClick={onClose}>
+                <Layers size={20} /> Categorías 
+              </NavLink>
+            )}
         </nav>
 
         {/* Footer */}
