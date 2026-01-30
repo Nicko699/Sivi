@@ -66,14 +66,16 @@ export function CrearCategoria({ isOpen, onClose, onSuccess }) {
       setErrores({});
       onClose();
     } catch (err) {
-      const mensajeBackend = err.response?.data?.mensaje || err.response?.data?.message || "Error inesperado";
+      const mensajeBackend = err.response?.data?.mensaje || err.response?.data?.message || "Error inesperado";   
   
   if (err.response?.status === 400) {
     setMensajeError(mensajeBackend); // Aquí aparecerá "El nombre de la categoría ya existe"
   } else {
     setMensajeError("Error al conectar con el servidor.");
   }
-}
+  } finally {
+    setLoading(false);
+} 
   };
 
   const handleClose = () => {
