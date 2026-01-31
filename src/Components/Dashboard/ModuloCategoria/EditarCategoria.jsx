@@ -84,7 +84,7 @@ export function EditarCategoria({ isOpen, onClose, categoria, onSuccess }) {
 
       onClose();
     } catch (err) {
-      const mensajeBackend = err.message || err.response?.data?.message || err.response?.data?.error || "";
+      const mensajeBackend = err.message || err.response?.data?.message || err.response?.data?.error || "Error al actualizar";
       
       if (mensajeBackend.toLowerCase().includes("ya existe") || 
           mensajeBackend.toLowerCase().includes("duplicado")) {
