@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Search, X, Trash2, Edit } from "lucide-react";
+import { Search, X, Trash2, Edit, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { obtenerUsuariosFiltrados, eliminarUsuario } from "../../../Services/UsuarioServiceP/UsuarioService";
 import { EliminarUsuario } from "./EliminarUsuario";
 import { EditarUsuarioModal } from "./EditarUsuario";
+import { Tooltip } from "../../Common/Tooltip";
+import { HelpPanel } from "../../Common/HelpPanel";
+import { helpContent } from "../../../helpContent";
 
-// 🔹 Función para traducir roles
+// Función para traducir roles
 const traducirRol = (rol) => {
   const traducciones = {
     'ROLE_ADMIN': 'Administrador',
@@ -18,7 +21,7 @@ const traducirRol = (rol) => {
   return traducciones[rol] || rol;
 };
 
-// 🔹 Modal de confirmación de eliminación
+// Modal de confirmación de eliminación
 function ModalEliminar({ usuario, onClose, onUsuarioEliminado }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -95,8 +98,8 @@ export function Usuarios() {
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroRol, setFiltroRol] = useState("");
   const [filtroActivo, setFiltroActivo] = useState("");
+  const [helpAbierto, setHelpAbierto] = useState(false);
 
-  // 🔹 Estados para edición
   const [modalEditar, setModalEditar] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
@@ -110,7 +113,6 @@ export function Usuarios() {
     try {
       setLoading(true);
       setError("");
-
       const data = await obtenerUsuariosFiltrados({
         page,
         size: 10,
@@ -118,12 +120,10 @@ export function Usuarios() {
         rol: filtroRol,
         activo: filtroActivo
       });
-
       const datosConRolesTraducidos = data.content.map(u => ({
         ...u,
         listaRol: u.listaRol?.map(r => ({ ...r, nombre: traducirRol(r.nombre) })) || []
       }));
-
       setUsuarios(datosConRolesTraducidos);
       setPageNumber(data.page.number);
       setTotalPages(data.page.totalPages);
@@ -150,7 +150,6 @@ export function Usuarios() {
   const irPagina = (pagina) => cargarUsuarios(pagina);
   const hayFiltrosActivos = filtroNombre || filtroRol || filtroActivo;
 
-  // 🔹 Funciones de edición
   const handleEditar = (usuario) => {
     setUsuarioSeleccionado(usuario);
     setModalEditar(true);
@@ -160,85 +159,110 @@ export function Usuarios() {
     cargarUsuarios(pageNumber);
   };
 
- return (
-  <div className="px-8 py-4 transition-all duration-300 max-sm:px-4 max-sm:py-6">
-    {loading && <LoaderOverlay />}
+  return (
+    <div className="px-8 py-4 transition-all duration-300 max-sm:px-4 max-sm:py-6">
+      {loading && <LoaderOverlay />}
 
-    {/* Cabecera */}
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 max-sm:gap-5 max-sm:mb-8">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl max-sm:text-3xl max-sm:text-center">
-        Gestión de usuarios
-      </h2>
-      <div className="flex justify-center sm:justify-end">
-        <Link
-          to="/dashboard/usuarios/crear"
-          className="bg-green-600/90 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5"
-        >
-          Crear Usuario
-        </Link>
+      {/* Cabecera */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 max-sm:gap-5 max-sm:mb-8">
+        <div className="flex items-center gap-2 max-sm:justify-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl max-sm:text-3xl">
+            Gestión de usuarios
+          </h2>
+          <Tooltip text="Abrir guía rápida" inline position="bottom">
+            <button
+              onClick={() => setHelpAbierto(true)}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors cursor-pointer"
+              aria-label="Abrir guía rápida"
+            >
+              <HelpCircle size={20} />
+            </button>
+          </Tooltip>
+        </div>
+        <div className="flex justify-center sm:justify-end">
+          <Tooltip text="Ir al formulario para crear un nuevo usuario" inline position="bottom-end">
+            <Link
+              to="/dashboard/usuarios/crear"
+              className="bg-green-600/90 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5"
+            >
+              Crear Usuario
+            </Link>
+          </Tooltip>
+        </div>
       </div>
-    </div>
 
-    {/* Filtros */}
-    <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-3 max-sm:gap-4 max-sm:mb-6">
-      <div className="relative flex-1 min-w-[180px] max-sm:min-w-full">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Buscar por nombre..."
-          value={filtroNombre}
-          onChange={(e) => setFiltroNombre(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white text-gray-800 max-sm:py-3.5 max-sm:text-base"
-        />
-        {filtroNombre && (
-          <button
-            onClick={() => setFiltroNombre("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            <X size={18} />
-          </button>
+      {/* Filtros */}
+      <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-3 max-sm:gap-4 max-sm:mb-6">
+        <Tooltip text="Busca usuarios por nombre" className="relative flex-1 min-w-[180px] max-sm:min-w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={filtroNombre}
+            onChange={(e) => setFiltroNombre(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white text-gray-800 max-sm:py-3.5 max-sm:text-base"
+          />
+          {filtroNombre && (
+            <button
+              onClick={() => setFiltroNombre("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </Tooltip>
+        <div className="flex gap-3 w-full sm:w-auto max-sm:flex-col max-sm:gap-4">
+          <Tooltip text="Filtra por rol: Administrador o Vendedor" position="top-end" className="flex-1 min-w-[180px] max-sm:min-w-full">
+            <select
+              value={filtroRol}
+              onChange={(e) => setFiltroRol(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white max-sm:py-3.5 max-sm:text-base"
+            >
+              <option value="">Filtrar por rol</option>
+              <option value="ADMIN">Administrador</option>
+              <option value="VEND">Vendedor</option>
+            </select>
+          </Tooltip>
+          <Tooltip text="Muestra solo usuarios activos o inactivos" position="top-end" className="flex-1 min-w-[150px] max-sm:min-w-full">
+            <select
+              value={filtroActivo}
+              onChange={(e) => setFiltroActivo(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white max-sm:py-3.5 max-sm:text-base"
+            >
+              <option value="">Filtrar por estado</option>
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
+          </Tooltip>
+        </div>
+        {hayFiltrosActivos && (
+          <Tooltip text="Elimina todos los filtros aplicados" inline position="top-end">
+            <button
+              onClick={limpiarFiltros}
+              className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 max-sm:w-full max-sm:py-3.5 max-sm:text-base max-sm:font-medium cursor-pointer"
+            >
+              Limpiar filtros
+            </button>
+          </Tooltip>
         )}
       </div>
-      <div className="flex gap-3 w-full sm:w-auto max-sm:flex-col max-sm:gap-4">
-        <select
-          value={filtroRol}
-          onChange={(e) => setFiltroRol(e.target.value)}
-          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white min-w-[180px] max-sm:py-3.5 max-sm:text-base max-sm:min-w-full"
-        >
-          <option value="">Filtrar por rol</option>
-          <option value="ADMIN">Administrador</option>
-          <option value="VEND">Vendedor</option>
-        </select>
-        <select
-          value={filtroActivo}
-          onChange={(e) => setFiltroActivo(e.target.value)}
-          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white min-w-[150px] max-sm:py-3.5 max-sm:text-base max-sm:min-w-full"
-        >
-          <option value="">Filtrar por estado</option>
-          <option value="true">Activo</option>
-          <option value="false">Inactivo</option>
-        </select>
-      </div>
-      {hayFiltrosActivos && (
-        <button
-          onClick={limpiarFiltros}
-          className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 max-sm:w-full max-sm:py-3.5 max-sm:text-base max-sm:font-medium cursor-pointer"
-        >
-          Limpiar filtros
-        </button>
-      )}
-    </div>
 
-    {/* Tabla */}
-    <div className="overflow-x-auto rounded-lg shadow max-sm:-mx-2 max-sm:rounded-lg">
-      {loading && usuarios.length === 0 ? (
-        <table className="w-full text-sm bg-white dark:bg-gray-800">
-          {/* tu tabla de loading */}
-        </table>
-      ) : usuarios.length > 0 ? (
-        <table className="w-full text-sm bg-white dark:bg-gray-800">
-          <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300">
+      {/* Tabla */}
+      <div className="overflow-x-auto rounded-lg shadow max-sm:-mx-2 max-sm:rounded-lg">
+        {loading && usuarios.length === 0 ? (
+          <table className="w-full text-sm bg-white dark:bg-gray-800">
+            <tbody>
+              <tr>
+                <td className="py-8 text-center text-gray-500 dark:text-gray-400">
+                  Cargando usuarios...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        ) : usuarios.length > 0 ? (
+          <table className="w-full text-sm bg-white dark:bg-gray-800">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300">
               <th className="py-2 px-3 text-center max-sm:py-4 w-[8%]">ID</th>
               <th className="py-2 px-3 text-left max-sm:py-4 w-[12%]">Nombre</th>
               <th className="py-2 px-3 text-left max-sm:py-4 w-[20%]" >Correo</th>
@@ -246,127 +270,115 @@ export function Usuarios() {
               <th className="py-2 px-3 text-center max-sm:py-4 w-[12%]">Estado</th>
               <th className="py-2 px-3 text-center max-sm:py-4 w-[15%]">Fecha creación</th>
               <th className="py-2 px-3 text-center max-sm:py-4 w-[20%]">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((u) => (
-              <tr
-                key={u.id}
-                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/50"
-              >
-                <td className="py-2 px-3 text-center text-gray-600 dark:text-gray-400 max-sm:py-4">{u.id}</td>
-                <td className="py-2 px-3 text-left font-medium dark:text-white max-sm:py-4">{u.nombre}</td>
-                <td className="py-2 px-3 text-left dark:text-gray-300 max-sm:py-4">{u.correo}</td>
-                <td className="py-2 px-3 text-center max-sm:py-4">
-                  <div className="flex flex-wrap justify-center gap-1">
-                    {u.listaRol?.map((r, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
-                      >
-                        {r.nombre}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="py-2 px-3 text-center max-sm:py-4">
-                  <span
-                    className={`inline-flex items-center justify-center px-3 py-1 text-xs font-medium rounded-full ${
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.map((u) => (
+                <tr
+                  key={u.id}
+                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700/50"
+                >
+                  <td className="py-2 px-3 text-center text-gray-600 dark:text-gray-400 max-sm:py-4">{u.id}</td>
+                  <td className="py-2 px-3 text-left font-medium dark:text-white max-sm:py-4">{u.nombre}</td>
+                  <td className="py-2 px-3 text-left dark:text-gray-300 max-sm:py-4">{u.correo}</td>
+                  <td className="py-2 px-3 text-center max-sm:py-4">
+                    <div className="flex flex-wrap justify-center gap-1">
+                      {u.listaRol?.map((r, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center justify-center px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                        >
+                          {r.nombre}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 text-center max-sm:py-4">
+                    <span className={`inline-flex items-center justify-center px-3 py-1 text-xs font-medium rounded-full ${
                       u.activo
                         ? "bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
                         : "bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300"
-                    }`}
-                  >
-                    {u.activo ? "Activo" : "Inactivo"}
-                  </span>
-                </td>
-                <td className="py-3 px-3 text-center text-gray-600 dark:text-gray-400 max-sm:py-4 max-sm:text-xs">
-                  {new Date(u.fechaCreacion).toLocaleDateString()}
-                </td>
-                <td className="px-3 text-center max-sm:py-4">
-  <div className="flex justify-center items-center gap-2">
-    
-    {/* Botón Editar */}
-    <div className="relative group inline-block">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          handleEditar(u);
-        }}
-        className="p-2 rounded-lg bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
-      >
-        <Edit className="w-4 h-4 pointer-events-none" />
-      </button>
-      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-        Editar usuario
-      </span>
-    </div>
-
-    {/* Botón Eliminar */}
-    <div className="relative group inline-block">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          EliminarUsuario(u, cargarUsuarios);
-        }}
-        className="p-2 rounded-lg bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
-      >
-        <Trash2 className="w-4 h-4 pointer-events-none" />
-      </button>
-      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-        Eliminar usuario
-      </span>
-    </div>
-    
-  </div>
-</td>
-      </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        !loading && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            {error
-              ? error
-              : hayFiltrosActivos
-              ? "No se encontraron usuarios con esos filtros."
-              : "No hay usuarios registrados."}
-          </div>
-        )
-      )}
-    </div>
-
-    {/* Paginación */}
-    {totalPages > 1 && usuarios.length > 0 && (
-      <div className="mt-4 flex flex-wrap gap-2 items-center justify-center max-sm:mt-8 max-sm:gap-4">
-        <button
-          disabled={pageNumber === 0}
-          onClick={() => irPagina(pageNumber - 1)}
-          className="px-4 py-2 cursor-pointer bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 transition-colors max-sm:px-6 max-sm:py-3.5 max-sm:text-base max-sm:font-medium"
-        >
-          Anterior
-        </button>
-        <span className="px-2 dark:text-white text-sm max-sm:text-base max-sm:font-medium">
-          Página {pageNumber + 1} de {totalPages}
-        </span>
-        <button
-          disabled={pageNumber + 1 >= totalPages}
-          onClick={() => irPagina(pageNumber + 1)}
-          className="px-4 py-2 cursor-pointer bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 transition-colors max-sm:px-6 max-sm:py-3.5 max-sm:text-base max-sm:font-medium"
-        >
-          Siguiente
-        </button>
+                    }`}>
+                      {u.activo ? "Activo" : "Inactivo"}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 text-center text-gray-600 dark:text-gray-400 max-sm:py-4 max-sm:text-xs">
+                    {new Date(u.fechaCreacion).toLocaleDateString()}
+                  </td>
+                  <td className="px-3 text-center max-sm:py-4">
+                    <div className="flex justify-center items-center gap-2">
+                      <Tooltip text="Editar usuario" inline>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleEditar(u); }}
+                          className="p-2 rounded-lg bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
+                        >
+                          <Edit className="w-4 h-4 pointer-events-none" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip text="Eliminar usuario" inline>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); EliminarUsuario(u, cargarUsuarios); }}
+                          className="p-2 rounded-lg bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-all hover:shadow-md active:scale-95 focus:outline-none cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4 pointer-events-none" />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          !loading && (
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+              {error
+                ? error
+                : hayFiltrosActivos
+                ? "No se encontraron usuarios con esos filtros."
+                : "No hay usuarios registrados."}
+            </div>
+          )
+        )}
       </div>
-    )}
 
-    
-      {/* Modal de editar */}
+      {/* Paginación */}
+      {totalPages > 1 && usuarios.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2 items-center justify-center max-sm:mt-8 max-sm:gap-4">
+          <button
+            disabled={pageNumber === 0}
+            onClick={() => irPagina(pageNumber - 1)}
+            className="px-4 py-2 cursor-pointer bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 transition-colors max-sm:px-6 max-sm:py-3.5 max-sm:text-base max-sm:font-medium"
+          >
+            Anterior
+          </button>
+          <span className="px-2 dark:text-white text-sm max-sm:text-base max-sm:font-medium">
+            Página {pageNumber + 1} de {totalPages}
+          </span>
+          <button
+            disabled={pageNumber + 1 >= totalPages}
+            onClick={() => irPagina(pageNumber + 1)}
+            className="px-4 py-2 cursor-pointer bg-blue-500 text-white rounded-lg disabled:opacity-50 hover:bg-blue-600 transition-colors max-sm:px-6 max-sm:py-3.5 max-sm:text-base max-sm:font-medium"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
+
       <EditarUsuarioModal
         isOpen={modalEditar}
         onClose={() => setModalEditar(false)}
         usuario={usuarioSeleccionado}
         onSuccess={handleSuccess}
       />
-  </div>
-);}
+
+      {/* Panel de ayuda */}
+      <HelpPanel
+        isOpen={helpAbierto}
+        onClose={() => setHelpAbierto(false)}
+        title={helpContent.usuarios.title}
+        sections={helpContent.usuarios.sections}
+      />
+    </div>
+  );
+}
