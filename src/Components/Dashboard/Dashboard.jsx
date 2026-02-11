@@ -11,6 +11,7 @@ import { Categorias } from "./ModuloCategoria/Categorias";
 import { Productos } from "./ModuloProducto/Productos";
 import { Lotes } from "./ModuloLote/Lotes";
 import { ProtectedRoute } from "../../Context/Auht/protectedRoute";
+import { ReporteVentas } from "./ModuloReporte/ReporteVentas";
 
 
 export function Dashboard() {
@@ -105,6 +106,16 @@ export function Dashboard() {
               element={
                 <ProtectedRoute rolesPermitidos={["ROLE_ADMIN", "ROLE_VEND"]}>
                   <Categorias />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Ruta para ADMIN - Reportes */}
+              <Route
+              path="reportes"
+              element={
+                <ProtectedRoute rolesPermitidos={["ROLE_ADMIN"]}>
+                  <ReporteVentas />
                 </ProtectedRoute>
               }
             />
