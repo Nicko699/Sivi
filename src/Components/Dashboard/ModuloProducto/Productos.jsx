@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Search, X, Trash2, Edit, Eye } from "lucide-react";
+import { Search, X, Trash2, Edit, Eye, HelpCircle } from "lucide-react";
+import { Tooltip } from "../../Common/Tooltip";
+import { HelpPanel } from "../../Common/HelpPanel";
+import { helpContent } from "../../../helpContent";
 import {
   obtenerProductosFiltradosAdmin,
   obtenerProductosFiltradosVend,
@@ -30,6 +33,7 @@ export function Productos() {
   const [modalDescripcion, setModalDescripcion] = useState(null);
   const [modalEditar, setModalEditar] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+  const [helpAbierto, setHelpAbierto] = useState(false);
 
   useEffect(() => {
     const rolesUsuario = getRolesUsuario();
@@ -154,25 +158,41 @@ const formatearStock = (stock, unidad) => {
 
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 max-sm:gap-5 max-sm:mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl max-sm:text-3xl max-sm:text-center">
-          {isAdmin ? "Gestión de productos" : "Productos disponibles"}
-        </h2>
+        <div className="flex items-center gap-2 max-sm:justify-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl max-sm:text-3xl">
+            {isAdmin ? "Gestión de productos" : "Productos disponibles"}
+          </h2>
+          <Tooltip text="Abrir guía rápida" inline position="bottom">
+            <button
+              onClick={() => setHelpAbierto(true)}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-colors cursor-pointer"
+              aria-label="Abrir guía rápida"
+            >
+              <HelpCircle size={20} />
+            </button>
+          </Tooltip>
+        </div>
 
         {isAdmin && (
           <div className="flex justify-center sm:justify-end">
-            <button
-              onClick={() => setModalCrearAbierto(true)}
-              className="bg-green-600/90 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5 cursor-pointer"
-            >
-              Crear Producto
-            </button>
+            <Tooltip text="Registrar un nuevo producto en el inventario" inline position="bottom-end">
+              <button
+                onClick={() => setModalCrearAbierto(true)}
+                className="bg-green-600/90 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 px-6 py-2.5 rounded-lg text-white font-semibold transition-colors text-center sm:w-auto max-sm:w-full max-sm:text-base max-sm:py-3.5 cursor-pointer"
+              >
+                Crear Producto
+              </button>
+            </Tooltip>
           </div>
         )}
       </div>
 
       {/* Filtros */}
       <div className="mb-4 flex flex-col sm:flex-row flex-wrap gap-3 max-sm:gap-4 max-sm:mb-6">
-        <div className="relative flex-1 min-w-[180px] max-sm:min-w-full">
+        <Tooltip
+          text="Busca productos por nombre o código de barras"
+          className="relative flex-1 min-w-[180px] max-sm:min-w-full"
+        >
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
@@ -189,42 +209,48 @@ const formatearStock = (stock, unidad) => {
               <X size={18} />
             </button>
           )}
-        </div>
+        </Tooltip>
 
         <div className="flex gap-3 w-full sm:w-auto max-sm:flex-col max-sm:gap-4">
-          <select
-            value={filtroCategoriaId}
-            onChange={(e) => setFiltroCategoriaId(e.target.value)}
-            className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white min-w-[150px] max-sm:py-3.5 max-sm:text-base max-sm:min-w-full"
-          >
-            <option value="">Filtrar por categoría</option>
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nombre}
-              </option>
-            ))}
-          </select>
+          <Tooltip text="Muestra solo los productos de una categoría" position="top-end" className="flex-1 min-w-[150px] max-sm:min-w-full">
+            <select
+              value={filtroCategoriaId}
+              onChange={(e) => setFiltroCategoriaId(e.target.value)}
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white max-sm:py-3.5 max-sm:text-base"
+            >
+              <option value="">Filtrar por categoría</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nombre}
+                </option>
+              ))}
+            </select>
+          </Tooltip>
 
           {isAdmin && (
-            <select
-              value={filtroActivo}
-              onChange={(e) => setFiltroActivo(e.target.value)}
-              className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white min-w-[150px] max-sm:py-3.5 max-sm:text-base max-sm:min-w-full"
-            >
-              <option value="">Filtrar por estado</option>
-              <option value="true">Activo</option>
-              <option value="false">Inactivo</option>
-            </select>
+            <Tooltip text="Muestra solo productos activos o inactivos" position="top-end" className="flex-1 min-w-[150px] max-sm:min-w-full">
+              <select
+                value={filtroActivo}
+                onChange={(e) => setFiltroActivo(e.target.value)}
+                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-white max-sm:py-3.5 max-sm:text-base"
+              >
+                <option value="">Filtrar por estado</option>
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
+              </select>
+            </Tooltip>
           )}
         </div>
 
         {hayFiltrosActivos && (
-          <button
-            onClick={limpiarFiltros}
-            className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 max-sm:w-full max-sm:py-3.5 max-sm:text-base max-sm:font-medium cursor-pointer"
-          >
-            Limpiar filtros
-          </button>
+          <Tooltip text="Elimina todos los filtros aplicados" inline position="top-end">
+            <button
+              onClick={limpiarFiltros}
+              className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 max-sm:w-full max-sm:py-3.5 max-sm:text-base max-sm:font-medium cursor-pointer"
+            >
+              Limpiar filtros
+            </button>
+          </Tooltip>
         )}
       </div>
 
@@ -253,7 +279,7 @@ const formatearStock = (stock, unidad) => {
                 <th className="py-2 px-3 text-center w-[6%]">Tipo Venta</th>
                 {isAdmin && <th className="py-2 px-3 text-center w-[6%]">Fecha de Creación</th>}
                 {isAdmin && <th className="py-2 px-3 text-center w-[6%]">Estado</th>}
-                {isAdmin && <th className="py-2 px-3 text-center w-[15%]">Acciones</th>}
+                {isAdmin && <th className="py-2 px-3 text-center w-[16%]">Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -312,7 +338,7 @@ const formatearStock = (stock, unidad) => {
     <div className="flex justify-center items-center gap-2">
 
       {/* Ver detalles */}
-      <div className="relative group inline-block">
+      <Tooltip text="Ver detalles" inline>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -322,13 +348,10 @@ const formatearStock = (stock, unidad) => {
         >
           <Eye className="w-4 h-4 pointer-events-none" />
         </button>
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-          Ver detalles 
-        </span>
-      </div>
+      </Tooltip>
 
       {/* Editar */}
-      <div className="relative group inline-block">
+      <Tooltip text="Editar producto" inline>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -338,13 +361,10 @@ const formatearStock = (stock, unidad) => {
         >
           <Edit className="w-4 h-4 pointer-events-none" />
         </button>
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-          Editar producto
-        </span>
-      </div>
+      </Tooltip>
 
       {/* Eliminar */}
-      <div className="relative group inline-block">
+      <Tooltip text="Eliminar producto" inline>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -354,10 +374,7 @@ const formatearStock = (stock, unidad) => {
         >
           <Trash2 className="w-4 h-4 pointer-events-none" />
         </button>
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md py-1.5 px-2.5 whitespace-nowrap transition-opacity duration-200 pointer-events-none shadow-lg z-10">
-          Eliminar producto
-        </span>
-      </div>
+      </Tooltip>
 
     </div>
   </td>
@@ -433,6 +450,14 @@ const formatearStock = (stock, unidad) => {
         onSuccess={() => cargarProductos(pageNumber)}
         categorias={categorias}
         marcas={marcas}
+      />
+
+      {/* Panel de ayuda */}
+      <HelpPanel
+        isOpen={helpAbierto}
+        onClose={() => setHelpAbierto(false)}
+        title={helpContent.productos.title}
+        sections={helpContent.productos.sections}
       />
     </div>
   );
