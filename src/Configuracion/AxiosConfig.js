@@ -9,7 +9,8 @@ export const setAxiosAccessToken = (token) => {
 
 export const getAxiosAccessToken = () => accessToken;
 
-const BASE_URL = "/api";
+//cambio temporal para probar reportes
+const BASE_URL = "http://localhost:8080";  
 
 // ================================
 // 🔹 Instancia solo para refresh
